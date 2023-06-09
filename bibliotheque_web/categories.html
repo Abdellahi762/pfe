@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Categories</title>
+    <!-- Bootstrap CSS -->
+    <!-- <link rel="stylesheet" href="bootstrap/bootstrap.css"> -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+</head>
+
+<body>
+    <nav class="navbar bg-body-tertiary">
+        <div class="container-fluid container">
+            <div>
+                <a class="navbar-brand" href="livres.html">Livres</a>
+                <a class="navbar-brand" href="categories.html">Categories</a>
+            </div>
+        </div>
+    </nav>
+    <div class="container">
+        <main class="mx-auto m-4">
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="card">
+                        <div class="card-header bg-dark text-white">
+                            <h4>List Des Categories</h4>
+                        </div>
+                        <div class="card-body">
+                            <table class="table table-bordered border-primary" id='categorieTable'>
+                                <thead>
+                                    <tr>
+                                        <th>Nom</th>
+                                        <th>Couverture</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id='CategorieData'>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Add Categories Form -->
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-header bg-dark text-white">
+                            <h4>Ajouter Un Categorie</h4>
+                        </div>
+                        <div class="card-body">
+                            <form action="#" method="POST" id="addCategorieForm" autocomplete="off"
+                                enctype="multipart/form-data">
+                                <div class="mb-3">
+                                    <label>Nom</label>
+                                    <input required type="text" name="nom" id="nom" class="form-control">
+                                </div>
+                                <div class="mb-3">
+                                    <label>Couverture (jpg, jpeg ou png)</label>
+                                    <input required type="file" name="couverture" id="couverture" class="form-control">
+                                </div>
+                                <div class="mb-3">
+                                    <div class="card-footer">
+                                        <button type="submit" id="createCategorieButton"
+                                            class="btn btn-primary">Ajouter</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Include the Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.9.1/firebase-database.js"></script>
+
+    <script type="module">
+        // 0- import modules
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-app.js";
+        import { getFirestore, collection, collectionGroup, doc, getDocs, getDoc, addDoc, updateDoc, deleteDoc, serverTimestamp, query, orderBy, where } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-firestore.js";
+        import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-storage.js";
+
+        $(document).ready(function () {
+            // 1- Firebase credentials here
+            const firebaseConfig = {
+                apiKey: "AIzaSyCa_YqhkBzPPcFjQxTm5sBsfhZ4q6JqACM",
+                authDomain: "bibliothequeaudio-c8455.firebaseapp.com",
+                projectId: "bibliothequeaudio-c8455",
+                storageBucket: "bibliothequeaudio-c8455.appspot.com",
+                messagingSenderId: "942099918648",
+                appId: "1:942099918648:web:61c10a75ea3c7b3ea71bcd",
+                databaseURL: "https://bibliothequeaudio-c8455-default-rtdb.firebaseio.com/",
+            };
+
+            // 2- Initialize Firebase
+            const app = initializeApp(firebaseConfig);
+            const db = getFirestore(app);
+            const storage = getStorage(app);
+
+            // 3- Function to display categories
+            async function displayCategories() {
+                const categorieTable = document.querySelector('#categorieTable tbody');
+                categorieTable.innerHTML = '';
+
+                const categoriesRef = collection(db, 'Categories');
+                const categorieSnapshot = await getDocs(categoriesRef);
+                categorieSnapshot.forEach((doc, index) => {
+                    const categorieData = doc.data();
+                    const tr = document.createElement('tr');
+                    tr.innerHTML =
+                        `<td>
+                            ${categorieData.nom}
+                        </td>
+                        <td>
+                            <img src="${categorieData.couverture}" alt="Couverture" height= "50">
+                        </td>
+                        <td>
+                        <button id="editCategorie"   class="btn btn-primary btn-sm" data-id="${index}">Modifier</button> &nbsp; &nbsp;
+                        <button id="deleteCategorie" class="btn btn-danger  btn-sm" data-id="${index}" data-name="'+ categorieData.nom+'">Supprimer</button> &nbsp; &nbsp;
+                        </td>`;
+                    categorieTable.appendChild(tr);
+                });
+            }
+            // 4- Display the initial categories
+            displayCategories();
+
+            // 5- Function to create a categorie
+            const addCategorieForm = document.getElementById('addCategorieForm');
+            addCategorieForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+
+                // 5.1- Get form inputs
+                const nomInput = document.getElementById('nom');
+                const couvertureInput = document.getElementById('couverture');
+
+                // 5.2- Upload couverture file to Firebase Storage
+                let couvertureURL = '';
+                if (couvertureInput.files.length > 0) {
+                    const fileC = couvertureInput.files[0];
+                    const fileNameC = `${Date.now()}_${fileC.name} `;
+                    const storageRefC = ref(storage, fileNameC);
+                    try {
+                        const snapshotC = await uploadBytes(storageRefC, fileC);
+                        couvertureURL = await getDownloadURL(snapshotC.ref);
+                        console.log('Couverture uploaded successfully!');
+                    } catch (error) {
+                        console.error('Error uploading couverture:', error);
+                        // Remove loading skeleton class on error
+                        return;
+                    }
+                }
+
+                // 5.3- Create a new document in the Categories collection with uploaded file URLs
+                try {
+                    await addDoc(collection(db, 'Categories'), {
+                        nom: nomInput.value,
+                        couverture: couvertureURL,
+                    });
+
+                    alert('Categorie added successfully!');
+
+                    // Clear form inputs
+                    nomInput.value = '';
+                    couvertureInput.value = '';
+
+                    // Refresh the categorie table to display the updated data
+                    await displayCategories();
+                } catch (error) {
+                    console.error('Error adding categorie:', error);
+                }
+            })
+
+            // 6- Function to edit a categorie
+            $('body').on('click', '#editCategorie', function (e) {
+                var catId = parseInt($(this).data('id'));
+                console.log(catId);
+                var nomInput = document.getElementById('nom');
+                var couvertureInput = document.getElementById('couverture');
+                const categoriesRef = collection(db, 'Categories');
+
+                getDocs(categoriesRef)
+                    .then((snapshot) => {
+                        if (!isNaN(catId) && snapshot.docs.length > catId) {
+                            const categoryData = snapshot.docs[catId].data();
+                            nomInput.value = categoryData.nom;
+                        } else {
+                            console.error('Invalid category ID:', catId);
+                        }
+                    })
+                    .catch((error) => {
+                        console.error('Error retrieving category:', error);
+                    });
+            });
+
+        });
+    </script>
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.7.0.js"
+        integrity="sha256-JlqSTELeR4TLqP0OG9dxM7yDPqX1ox/HfgiSLBj8+kM=" crossorigin="anonymous"></script>
+    <!-- <script src="jQuery/jquery-3.6.1.min.js"></script>
+    <script src="jQuery/jquery.js"></script> -->
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous">
+        </script>
+    <!-- <script src="bootstrap/bootstrap.js"></script> -->
+</body>
+
+</html>

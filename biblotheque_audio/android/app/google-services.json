@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "942099918648",
+    "project_id": "bibliothequeaudio-c8455",
+    "storage_bucket": "bibliothequeaudio-c8455.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:942099918648:android:e16fb514a82c7d39a71bcd",
+        "android_client_info": {
+          "package_name": "com.example.biblotheque_audio"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "942099918648-2mcnnkh8hnqfd4v9re8om5iuauk06bo1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCLlqUHshLFWp1lzs-QQN-ieLec3nMbaPA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "942099918648-2mcnnkh8hnqfd4v9re8om5iuauk06bo1.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

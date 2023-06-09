@@ -1,0 +1,4 @@
+-keep class androidx.** { ; }
+-keep class android.support.* { ; }
+-keep public class android.support.v7.widget.* { ; }
+-keep public class android.support.design.widget.* { *; }

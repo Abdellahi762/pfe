@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Livres</title>
+    <!-- Bootstrap CSS -->
+    <!-- <link rel="stylesheet" href="bootstrap/bootstrap.css"> -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+</head>
+
+<body>
+    <nav class="navbar bg-body-tertiary">
+        <div class="container-fluid container">
+            <div>
+                <a class="navbar-brand" href="livres.html">Livres</a>
+                <a class="navbar-brand" href="categories.html">Categories</a>
+            </div>
+        </div>
+    </nav>
+    <div class="container">
+        <main class="mx-auto m-4">
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="card">
+                        <div class="card-header bg-dark text-white">
+                            <h4>List Des Livres</h4>
+                        </div>
+                        <div class="card-body">
+                            <table class="table table-bordered border-primary" id='livreTable'>
+                                <thead>
+                                    <tr>
+                                        <th>Titre</th>
+                                        <th>Auteur</th>
+                                        <th>Language</th>
+                                        <th>Couverture</th>
+                                        <th>Audio</th>
+                                        <th>Pdf</th>
+                                    </tr>
+                                </thead>
+                                <tbody id='LivreData'>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Add Livres Form -->
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-header bg-dark text-white">
+                            <h4>Ajouter Un Livre</h4>
+                        </div>
+                        <div class="card-body">
+                            <form action="#" method="POST" id="addLivreForm" autocomplete="off"
+                                enctype="multipart/form-data">
+                                <div class="mb-3">
+                                    <label>Titre</label>
+                                    <input required type="text" name="titre" id="titre" class="form-control">
+                                </div>
+                                <div class="mb-3">
+                                    <label>Auteur</label>
+                                    <input required type="text" name="auteur" id="auteur" class="form-control">
+                                </div>
+                                <div class="mb-3">
+                                    <label>Language</label>
+                                    <input required type="text" name="language" id="language" class="form-control">
+                                </div>
+                                <div class="mb-3">
+                                    <label>Couverture (jpg, jpeg ou png)</label>
+                                    <input required type="file" name="couverture" id="couverture" class="form-control">
+                                </div>
+                                <div class="mb-3">
+                                    <label>Audio (mp3 ou m4a)</label>
+                                    <input required type="file" name="audio" id="audio" class="form-control">
+                                </div>
+                                <div class="mb-3">
+                                    <label>Pdf (pdf)</label>
+                                    <input required type="file" name="pdf" id="pdf" class="form-control">
+                                </div>
+                                <!-- <div class="mb-3">
+                                    <label>Categorie</label>
+                                    <select name="categorie" id="categorie" class="form-control">
+                                        <option value="">Select</option>
+                                        <option value="A">A</option>
+                                        <option value="B">B</option>
+                                    </select>
+                                </div> -->
+                                <div class="mb-3">
+                                    <div class="card-footer">
+                                        <button type="submit" id="createLivreButton"
+                                            class="btn btn-primary">Ajouter</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Include the Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.9.1/firebase-database.js"></script>
+
+    <!-- Firebase Connection -->
+    <!-- <script src="https://firebase.google.com/docs/web/setup#available-libraries"></script> -->
+
+    <!-- FireBase DataBase CDN -->
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/8.6.5/firebase-database.min.js"></script> -->
+
+    <script type="module">
+        // 0- import modules
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-app.js";
+        import { getFirestore, collection, collectionGroup, doc, getDocs, getDoc, addDoc, updateDoc, deleteDoc, serverTimestamp, query, orderBy, where } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-firestore.js";
+        import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-storage.js";
+
+        $(document).ready(function () {
+            // 1- Firebase credentials here
+            const firebaseConfig = {
+                apiKey: "AIzaSyCa_YqhkBzPPcFjQxTm5sBsfhZ4q6JqACM",
+                authDomain: "bibliothequeaudio-c8455.firebaseapp.com",
+                projectId: "bibliothequeaudio-c8455",
+                storageBucket: "bibliothequeaudio-c8455.appspot.com",
+                messagingSenderId: "942099918648",
+                appId: "1:942099918648:web:61c10a75ea3c7b3ea71bcd",
+                databaseURL: "https://bibliothequeaudio-c8455-default-rtdb.firebaseio.com/",
+            };
+
+            // 2- Initialize Firebase
+            const app = initializeApp(firebaseConfig);
+            const db = getFirestore(app);
+            const storage = getStorage(app);
+
+            // 3- Function to display livres
+            async function displayLivres() {
+                const livreTable = document.querySelector('#livreTable tbody');
+                livreTable.innerHTML = '';
+                const livresRef = collection(db, 'Livres');
+                const livreSnapshot = await getDocs(livresRef);
+                livreSnapshot.forEach((doc, index) => {
+                    const livreData = doc.data();
+                    const tr = document.createElement('tr');
+                    tr.innerHTML =
+                        `<td>${livreData.titre}</td>
+                        <td>${livreData.auteur}</td>
+                        <td>${livreData.language}</td>
+                        <td><img src="${livreData.couverture}" alt="Couverture" height= "50"></td>
+                        <td><audio controls src="${livreData.audio}"></audio></td>
+                        <td><button class="btn btn-primary"><a style = "color: white; text-decoration: none;" href="${livreData.pdf}" target="_blank" rel="noopener noreferrer">PDF</a></button></td>`;
+                    livreTable.appendChild(tr);
+                });
+            }
+            // 4- Display the initial livres
+            displayLivres();
+
+            // 5- Function to create a livre
+            const addLivreForm = document.getElementById('addLivreForm');
+            addLivreForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+
+                // 5.1- Get form inputs
+                const titreInput = document.getElementById('titre');
+                const auteurInput = document.getElementById('auteur');
+                const languageInput = document.getElementById('language');
+                const couvertureInput = document.getElementById('couverture');
+                const audioInput = document.getElementById('audio');
+                const pdfInput = document.getElementById('pdf');
+                
+                // 5.2- Upload couverture, Audio and Pdf files to Firebase Storage
+                let couvertureURL = '', audioURL = '', pdfURL = '';
+                if (couvertureInput.files.length > 0 && audioInput.files.length > 0 && pdfInput.files.length > 0) {
+                    const fileC = couvertureInput.files[0];
+                    const fileA = audioInput.files[0];
+                    const fileP = pdfInput.files[0];
+
+                    const fileNameC = `${Date.now()}_${fileC.name} `;
+                    const fileNameA = `${Date.now()}_${fileA.name} `;
+                    const fileNameP = `${Date.now()}_${fileP.name}`;
+
+                    const storageRefC = ref(storage, fileNameC);
+                    const storageRefA = ref(storage, fileNameA);
+                    const storageRefP = ref(storage, fileNameP);
+
+                    try {
+                        const snapshotC = await uploadBytes(storageRefC, fileC);
+                        const snapshotA = await uploadBytes(storageRefA, fileA);
+                        const snapshotP = await uploadBytes(storageRefP, fileP);
+
+                        couvertureURL = await getDownloadURL(snapshotC.ref);
+                        audioURL = await getDownloadURL(snapshotA.ref);
+                        pdfURL = await getDownloadURL(snapshotP.ref);
+
+                        console.log('Couverture, Audio and PDF uploaded successfully!');
+                    } catch (error) {
+                        console.error('Error uploading couverture:', error);
+                        // Remove loading skeleton class on error
+                        return;
+                    }
+                }
+
+                // 5.3- Create a new document in the Livres collection with uploaded file URLs
+                try {
+                    await addDoc(collection(db, 'Livres'), {
+                        titre: titreInput.value,
+                        auteur: auteurInput.value,
+                        language: languageInput.value,
+                        couverture: couvertureURL,
+                        audio: audioURL,
+                        pdf: pdfURL
+                    });
+
+                    alert('Livre added successfully!');
+
+                    // Clear form inputs
+                    titreInput.value = '';
+                    auteurInput.value = '';
+                    languageInput.value = '';
+                    couvertureInput.value = '';
+                    audioInput.value = '';
+                    pdfInput.value = '';
+
+                    // Refresh the livre table to display the updated data
+                    await displayLivres();
+                } catch (error) {
+                    console.error('Error adding livre:', error);
+                }
+            })
+        })
+    </script>
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.7.0.js"
+        integrity="sha256-JlqSTELeR4TLqP0OG9dxM7yDPqX1ox/HfgiSLBj8+kM=" crossorigin="anonymous"></script>
+    <!-- <script src="jQuery/jquery-3.6.1.min.js"></script>
+    <script src="jQuery/jquery.js"></script> -->
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous">
+        </script>
+    <!-- <script src="bootstrap/bootstrap.js"></script> -->
+</body>
+
+</html>
