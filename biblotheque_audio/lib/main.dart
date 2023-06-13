@@ -9,7 +9,7 @@ import 'login.dart';
 Future<void> main() async {
 // 1- Initializing frebase
   WidgetsFlutterBinding.ensureInitialized();
-  Firebase.initializeApp();
+  await Firebase.initializeApp();
 
   final sharedPref = await SharedPreferences.getInstance();
   String? uid = sharedPref.getString("UID");

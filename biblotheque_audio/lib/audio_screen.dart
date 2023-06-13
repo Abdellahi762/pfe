@@ -6,8 +6,78 @@ import 'package:rxdart/rxdart.dart' as rxdart;
 import 'models/books_model.dart';
 import 'seek_bar.dart';
 
+// class AudioScreen extends StatefulWidget {
+//   const AudioScreen({super.key});
+
+//   @override
+//   State<AudioScreen> createState() => _AudioScreenState();
+// }
+
+// class _AudioScreenState extends State<AudioScreen> {
+//   AudioPlayer audioPlayer = AudioPlayer();
+//   Book book = Get.arguments ?? Book.books[0];
+
+//   @override
+//   void initState() {
+//     super.initState();
+//     audioPlayer.setAudioSource(
+//       ConcatenatingAudioSource(
+//         children: [
+//           AudioSource.uri(
+//             Uri.parse('asset:///${book.url}'),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+
+//   @override
+//   void dispose() {
+//     audioPlayer.dispose();
+//     super.dispose();
+//   }
+
+//   Stream<SeekBarData> get _seekBarDataStream =>
+//       rxdart.Rx.combineLatest2<Duration, Duration?, SeekBarData>(
+//         audioPlayer.positionStream,
+//         audioPlayer.durationStream,
+//         (
+//           Duration position,
+//           Duration? duration,
+//         ) {
+//           return SeekBarData(
+//             position,
+//             duration ?? Duration.zero,
+//           );
+//         },
+//       );
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(
+//         backgroundColor: Colors.transparent,
+//         elevation: 0,
+//       ),
+//       extendBodyBehindAppBar: true,
+//       body: Stack(
+//         fit: StackFit.expand,
+//         children: [
+//           Image.asset(
+//             book.coverUrl,
+//             fit: BoxFit.cover,
+//           ),
+//           const BackgroundFilter(),
+//           _AudioPlayer(
+//               book: book,
+//               seekBarDataStream: _seekBarDataStream,
+//               audioPlayer: audioPlayer),
+//         ],
+//       ),
+//     );
+//   }
+// }
 class AudioScreen extends StatefulWidget {
-  const AudioScreen({super.key});
+  const AudioScreen({Key? key}) : super(key: key);
 
   @override
   State<AudioScreen> createState() => _AudioScreenState();
@@ -15,16 +85,17 @@ class AudioScreen extends StatefulWidget {
 
 class _AudioScreenState extends State<AudioScreen> {
   AudioPlayer audioPlayer = AudioPlayer();
-  Book book = Get.arguments ?? Book.books[0];
+  late Book book;
 
   @override
   void initState() {
     super.initState();
+    book = Get.arguments as Book;
     audioPlayer.setAudioSource(
       ConcatenatingAudioSource(
         children: [
           AudioSource.uri(
-            Uri.parse('asset:///${book.url}'),
+            Uri.parse(book.audio),
           ),
         ],
       ),
@@ -51,6 +122,7 @@ class _AudioScreenState extends State<AudioScreen> {
           );
         },
       );
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -62,15 +134,16 @@ class _AudioScreenState extends State<AudioScreen> {
       body: Stack(
         fit: StackFit.expand,
         children: [
-          Image.asset(
+          Image.network(
             book.coverUrl,
             fit: BoxFit.cover,
           ),
           const BackgroundFilter(),
           _AudioPlayer(
-              book: book,
-              seekBarDataStream: _seekBarDataStream,
-              audioPlayer: audioPlayer),
+            book: book,
+            seekBarDataStream: _seekBarDataStream,
+            audioPlayer: audioPlayer,
+          ),
         ],
       ),
     );

@@ -1,0 +1,84 @@
+Plan :
+1. Introduction
+2. Présentation du projet
+    Etude de l'existent
+    Problématique
+    Objectif
+    Les besoins fonctionnels
+    Les besoins non fonctionnels
+3. Analyse et conception 
+    diagramme de class
+    diagramme de cas d'utilisation
+    conclusion
+4. Outils de développement
+5. Bilan personnelle
+6. Démonstration
+7. Conclusion générale et perspective
+===============================================================
+
+1. Nous nous presentons
+2. lire le Plan
+
+3. Introduction                        ()
+    Notre projet consiste en une application mobile de bibliothèque audio offrant 
+    des fonctionnalités essentielles pour la lecture des livres audio. 
+    Les utilisateurs peuvent chercher des livres, les lire et les sauvegarder en tant que favoris. 
+    L'application permet également de consulter l'historique des livres consultés. 
+    De plus, les utilisateurs ont la possibilité de télécharger à la fois l'audio et le PDF du livre pour une expérience de lecture flexible.
+
+4. lire le Plan
+5. lire l'etude de l'existent
+6. lire la problématique
+7. lire l'objectif
+8. lire les les besoins fonctionnels
+9. lire les besoins non fonctionnels
+
+10. Analyse et conception              ()
+    Dans la phase d'analyse et de conception de notre projet, 
+    nous avons utilisé UML (Unified Modeling Language) pour concevoir les routes sur lesquelles le projet sera réalisé. 
+    UML nous a permis de créer des diagrammes de classes, 
+    des diagrammes de cas d'utilisation pour visualiser et planifier le flux de l'application. 
+
+11. Expliquer le diagramme de class
+    Le diagramme de classes représente la structure statique d'un système en identifiant les classes, 
+    leurs attributs et leurs relations. 
+
+12. Expliquer le diagramme de cas d'utilisation admin
+    Le diagramme de cas d'utilisation décrit les interactions entre les acteurs et le système, 
+    mettant en évidence les fonctionnalités offertes par le système du point de vue des utilisateurs.
+
+13. Expliquer le diagramme de cas d'utilisation utilisateur
+
+14. Conclusion                         ()
+    L'analyse et la conception approfondies de notre projet à l'aide d'UML ont permis d'établir une base solide pour sa réalisation.
+    Ces étapes essentielles nous ont aidés à structurer efficacement l'application et à anticiper les besoins des utilisateurs, 
+    contribuant ainsi au succès de notre projet.
+
+15. Parler sur les outils de développement "les languages de programmation"             ()
+    Nous avons utilisé Dart et Flutter pour le développement de l'application mobile, 
+    en offrant une expérience utilisateur fluide et attrayante. 
+    En parallèle, nous avons utilisé HTML, CSS et JavaScript pour la création d'une interface web interactive. 
+    Firebase a été utilisé comme une base de données centrale pour maintenir la cohérence entre les deux plateformes. 
+    Cette combinaison de technologies nous a permis de créer un projet polyvalent et performant.
+
+16. Bilan personnelle                  ()
+    notre parcours dans ce projet nous a permis de développer non seulement nos compétences techniques, 
+    mais aussi nos compétences en travail d'équipe et en résolution de problèmes. 
+    Nous avons surmonté des obstacles ensemble, corrigé nos erreurs et découvert de nouvelles technologies qui ont enrichi notre expérience.
+    Nous sommes fiers du résultat final et sommes impatients d'appliquer ces acquis dans nos futurs projets.
+
+17. Sortir de la presentation
+
+18. Conclusion générale et perspective              ()
+    En conclusion, ce projet de développement d'une application mobile de bibliothèque audio a été une expérience gratifiante, 
+    nous permettant de mettre en pratique nos compétences techniques et de concevoir une solution fonctionnelle et conviviale. 
+    L'utilisation de Flutter et Dart nous a offert des outils puissants pour créer une interface utilisateur attrayante. 
+    nous sommes fiers de notre réalisation et des apprentissages tirés de cette expérience.
+    De plus, si nous avions disposé de plus de temps, nous aurions pu réaliser la deuxième partie de notre projet, 
+    qui consistait à permettre aux aveugles d'interagir avec l'application. 
+    Cela aurait été une étape importante pour rendre notre application encore plus inclusive et accessible à tous.
+    Nous avons pu appliquer les compétences et connaissances acquises au cours de nos trois années de licence pour mener à bien ce projet. 
+    Les concepts de développement logiciel, 
+    la programmation orientée objet et les bonnes pratiques de conception ont tous été mis en œuvre pour créer une application de qualité.
+
+19. Merci pour votre attention.

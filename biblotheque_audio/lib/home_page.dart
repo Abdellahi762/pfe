@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -19,7 +20,7 @@ class HomePage extends StatefulWidget {
 class HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
-    List<Book> books = Book.books;
+    // List<Book> books = Book.books;
     List<Categorie> categories = Categorie.categories;
     return Container(
       decoration: BoxDecoration(
@@ -37,7 +38,7 @@ class HomePageState extends State<HomePage> {
           child: Column(
             children: [
               DiscoverMusic(context: context),
-              TrendingBooks(books: books),
+              const TrendingBooks(),
               Categries(categories: categories)
             ],
           ),
@@ -119,7 +120,7 @@ class DiscoverMusic extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text("Welcome", style: TextStyle(fontSize: 14)),
+          const Text("Bien", style: TextStyle(fontSize: 14)),
           const SizedBox(
             height: 15,
           ),
@@ -268,13 +269,66 @@ class CategoriesCard extends StatelessWidget {
   }
 }
 
+
+
+// class TrendingBooks extends StatelessWidget {
+//   const TrendingBooks({
+//     Key? key,
+//   }) : super(key: key);
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Padding(
+//       padding: const EdgeInsets.only(left: 20.0, top: 20.0, bottom: 20.0),
+//       child: Column(
+//         children: [
+//           const Padding(
+//             padding: EdgeInsets.only(right: 20.0),
+//             child: SectionHeader(title: 'Trending Books'),
+//           ),
+//           const SizedBox(height: 20),
+//           FutureBuilder<QuerySnapshot<Map<String, dynamic>>>(
+//             future: FirebaseFirestore.instance.collection('Livres').get(),
+//             builder: (context, snapshot) {
+//               if (snapshot.connectionState == ConnectionState.waiting) {
+//                 return const CircularProgressIndicator();
+//               }
+//               if (snapshot.hasError) {
+//                 return Text('Error: ${snapshot.error}');
+//               }
+//               if (snapshot.data == null) {
+//                 return const Text('No data available');
+//               }
+//               final books = snapshot.data!.docs.map((doc) {
+//                 final data = doc.data();
+//                 return Book(
+//                   title: data['title'] ?? '',
+//                   author: data['author'] ?? '',
+//                   coverUrl: data['coverUrl'] ?? '',
+//                 );
+//               }).toList();
+
+//               return SizedBox(
+//                 height: MediaQuery.of(context).size.height * 0.27,
+//                 child: ListView.builder(
+//                   scrollDirection: Axis.horizontal,
+//                   itemCount: books.length,
+//                   itemBuilder: (context, index) {
+//                     return BookCard(book: books[index]);
+//                   },
+//                 ),
+//               );
+//             },
+//           )
+//         ],
+//       ),
+//     );
+//   }
+// }
 class TrendingBooks extends StatelessWidget {
   const TrendingBooks({
-    super.key,
-    required this.books,
-  });
-
-  final List<Book> books;
+    Key? key,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -287,98 +341,195 @@ class TrendingBooks extends StatelessWidget {
             child: SectionHeader(title: 'Trending Books'),
           ),
           const SizedBox(height: 20),
-          SizedBox(
-              height: MediaQuery.of(context).size.height * 0.27,
-              child: ListView.builder(
+          FutureBuilder<QuerySnapshot<Map<String, dynamic>>>(
+            future: FirebaseFirestore.instance.collection('Livres').get(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const CircularProgressIndicator();
+              }
+              if (snapshot.hasError) {
+                return Text('Error: ${snapshot.error}');
+              }
+              if (snapshot.data == null) {
+                return const Text('No data available');
+              }
+              final books = snapshot.data!.docs.map((doc) {
+                final data = doc.data();
+                return Book(
+                  title: data['titre'] ?? '',
+                  author: data['auteur'] ?? '',
+                  coverUrl: data['couverture'] ?? '',
+                  pdf: data['pdf'] ?? '',
+                  audio: data['audio'] ?? '',
+                );
+              }).toList();
+
+              return SizedBox(
+                height: MediaQuery.of(context).size.height * 0.27,
+                child: ListView.builder(
                   scrollDirection: Axis.horizontal,
                   itemCount: books.length,
                   itemBuilder: (context, index) {
-                    return BookCard(book: books[index]);
-                  }))
+                    return InkWell(
+                      onTap: () {
+                        Get.to(const AudioScreen(), arguments: books[index]);
+                      },
+                      child: Container(
+                        margin: const EdgeInsets.only(right: 10),
+                        child: Stack(
+                          alignment: Alignment.bottomCenter,
+                          children: [
+                            Container(
+                              width:
+                                  MediaQuery.of(context).size.width * 0.45,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(15.0),
+                                image: DecorationImage(
+                                  image: NetworkImage(books[index].coverUrl),
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                            ),
+                            Container(
+                              height: 55.0,
+                              margin: const EdgeInsets.only(bottom: 10),
+                              width:
+                                  MediaQuery.of(context).size.width * 0.37,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(15.0),
+                                color: Colors.white.withOpacity(0.9),
+                              ),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceAround,
+                                children: [
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        books[index].title,
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodyLarge
+                                            ?.copyWith(
+                                              color: Colors.deepPurple,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                      ),
+                                      Text(
+                                        books[index].author,
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodyLarge
+                                            ?.copyWith(
+                                              color: Colors.purple,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                      ),
+                                    ],
+                                  ),
+                                  const Icon(
+                                    Icons.play_circle,
+                                    color: Colors.deepPurple,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              );
+            },
+          )
         ],
       ),
     );
   }
 }
+// class BookCard extends StatelessWidget {
+//   const BookCard({
+//     super.key,
+//     required this.book,
+//   });
 
-class BookCard extends StatelessWidget {
-  const BookCard({
-    super.key,
-    required this.book,
-  });
+//   final Book book;
 
-  final Book book;
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: () {
-        Get.to(const AudioScreen(), arguments: book);
-      },
-      child: Container(
-        margin: const EdgeInsets.only(right: 10),
-        child: Stack(
-          alignment: Alignment.bottomCenter,
-          children: [
-            Container(
-              width: MediaQuery.of(context).size.width * 0.45,
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(15.0),
-                  image: DecorationImage(
-                    image: AssetImage(book.coverUrl),
-                    fit: BoxFit.cover,
-                  )),
-            ),
-            Container(
-              height: 55.0,
-              margin: const EdgeInsets.only(bottom: 10),
-              width: MediaQuery.of(context).size.width * 0.37,
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(15.0),
-                  color: Colors.white.withOpacity(0.9)),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        book.title,
-                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                              color: Colors.deepPurple,
-                              fontWeight: FontWeight.bold,
-                            ),
-                      ),
-                      Text(
-                        book.author,
-                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                              color: Colors.purple,
-                              fontWeight: FontWeight.bold,
-                            ),
-                      ),
-                    ],
-                  ),
-                  const Icon(Icons.play_circle, color: Colors.deepPurple)
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     // ignore: avoid_print
+//     print("-----------------------$book----------------------${book.getTitle}");
+//     return InkWell(
+//       onTap: () {
+//         Get.to(const AudioScreen(), arguments: book);
+//       },
+//       child: Container(
+//         margin: const EdgeInsets.only(right: 10),
+//         child: Stack(
+//           alignment: Alignment.bottomCenter,
+//           children: [
+//             Container(
+//               width: MediaQuery.of(context).size.width * 0.45,
+//               decoration: BoxDecoration(
+//                 borderRadius: BorderRadius.circular(15.0),
+//                 // image: DecorationImage(
+//                 //   image: NetworkImage(book.coverUrl),
+//                 //   fit: BoxFit.cover,
+//                 // )
+//               ),
+//             ),
+//             Container(
+//               height: 55.0,
+//               margin: const EdgeInsets.only(bottom: 10),
+//               width: MediaQuery.of(context).size.width * 0.37,
+//               decoration: BoxDecoration(
+//                   borderRadius: BorderRadius.circular(15.0),
+//                   color: Colors.white.withOpacity(0.9)),
+//               child: Row(
+//                 mainAxisAlignment: MainAxisAlignment.spaceAround,
+//                 children: [
+//                   Column(
+//                     crossAxisAlignment: CrossAxisAlignment.start,
+//                     mainAxisAlignment: MainAxisAlignment.center,
+//                     children: [
+//                       Text(
+//                         book.getTitle,
+//                         style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+//                               color: Colors.deepPurple,
+//                               fontWeight: FontWeight.bold,
+//                             ),
+//                       ),
+//                       Text(
+//                         book.author,
+//                         style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+//                               color: Colors.purple,
+//                               fontWeight: FontWeight.bold,
+//                             ),
+//                       ),
+//                     ],
+//                   ),
+//                   const Icon(Icons.play_circle, color: Colors.deepPurple)
+//                 ],
+//               ),
+//             ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }
 
 class SectionHeader extends StatelessWidget {
   const SectionHeader({
     super.key,
     required this.title,
-    this.action = 'View More',
   });
 
   final String title;
-  final String action;
 
   @override
   Widget build(BuildContext context) {
@@ -390,11 +541,6 @@ class SectionHeader extends StatelessWidget {
                 fontWeight: FontWeight.bold,
                 color: Colors.white,
                 fontSize: 25)),
-        Text(action,
-            style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-                fontSize: 15)),
       ],
     );
   }

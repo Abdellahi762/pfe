@@ -35,7 +35,7 @@
 <body>
     <div class="container">
         <h1>Login</h1>
-        <form id="loginForm" action="#" method="POST">
+        <form id="submitData" action="#" method="POST">
             <div class="mb-3">
                 <input type="text" class="form-control" id="email" name="email" placeholder="Email" required>
             </div>
@@ -45,13 +45,18 @@
             </div>
             <button type="submit" class="btn btn-primary">Login</button>
         </form>
+        <p id="errorMessage"></p>
     </div>
 
-    <!-- Include the Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.9.1/firebase-database.js"></script>
-
     <script type="module">
+        import {
+            getAuth,
+            createUserWithEmailAndPassword,
+            signInWithEmailAndPassword
+        } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-auth.js";
+        import { getDatabase, set, ref, update } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-database.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-app.js";
+
         // 1- Initialize Firebase with your SDK configuration
         const firebaseConfig = {
             apiKey: "AIzaSyCa_YqhkBzPPcFjQxTm5sBsfhZ4q6JqACM",
@@ -63,58 +68,32 @@
             databaseURL: "https://bibliothequeaudio-c8455-default-rtdb.firebaseio.com/",
         };
 
-        firebase.initializeApp(firebaseConfig);
+        // Import the functions you need from the SDKs you need
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth();
+        const database = getDatabase(app);
+        const submitData = document.getElementById('submitData');
+        const errorMessage = document.getElementById('errorMessage');
 
-        // Get the login form element
-        var loginForm = document.getElementById("loginForm");
+        submitData.addEventListener('submit', (e) => {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
 
-        // Add event listener to the login form submission
-        loginForm.addEventListener("submit", function (event) {
-            event.preventDefault();
-
-            // Get the email and password values
-            var email = document.getElementById("email").value;
-            var password = document.getElementById("password").value;
-
-            // Sign in with email and password
-            firebase.auth().signInWithEmailAndPassword(email, password)
-                .then(function (userCredential) {
-                    // Redirect to the home page or perform any other action
-                    window.location.href = "home.php";
+            // Log in user
+            signInWithEmailAndPassword(auth, email, password)
+                .then(() => {
+                    // Redirect to home page
+                    window.location.replace("livres.html");
                 })
-                .catch(function (error) {
-                    // Handle login errors
-                    alert("Login failed. Please check your credentials.");
-                    console.error(error);
+                .catch((error) => {
+                    const errorCode = error.code;
+                    const errorMessageText = error.message;
+                    // Display error message
+                    errorMessage.textContent = errorMessageText;
+                    errorMessage.style.color = 'red';
                 });
         });
     </script>
-    <!-- <?php
-        // Start the session
-        session_start();
-
-        // Check if the email and password are provided
-        if (isset($_POST['email']) && isset($_POST['password'])) {
-            // Retrieve the email and password from the form
-            $email = $_POST['email'];
-            $password = $_POST['password'];
-
-            // TODO: Implement your own server-side authentication logic here (e.g., database check)
-
-            // If the authentication is successful
-            if ($authentication_successful) {
-                // Set a session variable or perform any other action
-                $_SESSION['email'] = $email;
-                echo "success";
-            } else {
-                // If the authentication fails
-                echo "failure";
-            }
-        } else {
-            // If the email or password is not provided
-            echo "missing_data";
-        }
-    ?> -->
 </body>
 
 </html>

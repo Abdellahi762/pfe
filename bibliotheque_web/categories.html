@@ -33,7 +33,6 @@
                                     <tr>
                                         <th>Nom</th>
                                         <th>Couverture</th>
-                                        <th>Action</th>
                                     </tr>
                                 </thead>
                                 <tbody id='CategorieData'>
@@ -78,6 +77,12 @@
     <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.9.1/firebase-database.js"></script>
 
+    <!-- Firebase Connection -->
+    <!-- <script src="https://firebase.google.com/docs/web/setup#available-libraries"></script> -->
+
+    <!-- FireBase DataBase CDN -->
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/8.6.5/firebase-database.min.js"></script> -->
+
     <script type="module">
         // 0- import modules
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-app.js";
@@ -105,23 +110,14 @@
             async function displayCategories() {
                 const categorieTable = document.querySelector('#categorieTable tbody');
                 categorieTable.innerHTML = '';
-
                 const categoriesRef = collection(db, 'Categories');
                 const categorieSnapshot = await getDocs(categoriesRef);
                 categorieSnapshot.forEach((doc, index) => {
                     const categorieData = doc.data();
                     const tr = document.createElement('tr');
                     tr.innerHTML =
-                        `<td>
-                            ${categorieData.nom}
-                        </td>
-                        <td>
-                            <img src="${categorieData.couverture}" alt="Couverture" height= "50">
-                        </td>
-                        <td>
-                        <button id="editCategorie"   class="btn btn-primary btn-sm" data-id="${index}">Modifier</button> &nbsp; &nbsp;
-                        <button id="deleteCategorie" class="btn btn-danger  btn-sm" data-id="${index}" data-name="'+ categorieData.nom+'">Supprimer</button> &nbsp; &nbsp;
-                        </td>`;
+                        `<td>${categorieData.nom}</td>
+                        <td><img src="${categorieData.couverture}" alt="Couverture" height= "50"></td>`;
                     categorieTable.appendChild(tr);
                 });
             }
@@ -136,19 +132,22 @@
                 // 5.1- Get form inputs
                 const nomInput = document.getElementById('nom');
                 const couvertureInput = document.getElementById('couverture');
-
+                
                 // 5.2- Upload couverture file to Firebase Storage
                 let couvertureURL = '';
                 if (couvertureInput.files.length > 0) {
-                    const fileC = couvertureInput.files[0];
-                    const fileNameC = `${Date.now()}_${fileC.name} `;
-                    const storageRefC = ref(storage, fileNameC);
+                    const file = couvertureInput.files[0];
+
+                    const fileName = `${Date.now()}_${file.name} `;
+
+                    const storageRef = ref(storage, fileName);
+
                     try {
-                        const snapshotC = await uploadBytes(storageRefC, fileC);
-                        couvertureURL = await getDownloadURL(snapshotC.ref);
-                        console.log('Couverture uploaded successfully!');
+                        const snapshot = await uploadBytes(storageRef, file);
+
+                        couvertureURL = await getDownloadURL(snapshot.ref);
                     } catch (error) {
-                        console.error('Error uploading couverture:', error);
+                        alert('Error uploading couverture image!');
                         // Remove loading skeleton class on error
                         return;
                     }
@@ -167,36 +166,13 @@
                     nomInput.value = '';
                     couvertureInput.value = '';
 
-                    // Refresh the categorie table to display the updated data
+                    // Refresh the categories table to display the updated data
                     await displayCategories();
                 } catch (error) {
-                    console.error('Error adding categorie:', error);
+                    alert('Error adding categorie to the firestore!');
                 }
             })
-
-            // 6- Function to edit a categorie
-            $('body').on('click', '#editCategorie', function (e) {
-                var catId = parseInt($(this).data('id'));
-                console.log(catId);
-                var nomInput = document.getElementById('nom');
-                var couvertureInput = document.getElementById('couverture');
-                const categoriesRef = collection(db, 'Categories');
-
-                getDocs(categoriesRef)
-                    .then((snapshot) => {
-                        if (!isNaN(catId) && snapshot.docs.length > catId) {
-                            const categoryData = snapshot.docs[catId].data();
-                            nomInput.value = categoryData.nom;
-                        } else {
-                            console.error('Invalid category ID:', catId);
-                        }
-                    })
-                    .catch((error) => {
-                        console.error('Error retrieving category:', error);
-                    });
-            });
-
-        });
+        })
     </script>
 
     <!-- jQuery -->

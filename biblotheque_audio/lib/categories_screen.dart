@@ -56,8 +56,8 @@ class CategorieScreen extends StatelessWidget {
                         Book selectedBook = categorie.books[index];
                         Get.to(const AudioScreen(), arguments: selectedBook);
                       },
-                      subtitle: Text(
-                          '${categorie.books[index].author} • ${categorie.books[index].language}'),
+                      // subtitle: Text(
+                      //     '${categorie.books[index].author} • ${categorie.books[index].language}'),
                     );
                   },
                 ),

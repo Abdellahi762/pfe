@@ -193,9 +193,9 @@
                         audioURL = await getDownloadURL(snapshotA.ref);
                         pdfURL = await getDownloadURL(snapshotP.ref);
 
-                        console.log('Couverture, Audio and PDF uploaded successfully!');
+                        // console.log('Couverture, Audio and PDF uploaded successfully!');
                     } catch (error) {
-                        console.error('Error uploading couverture:', error);
+                        alert('Error uploading couverture image!');
                         // Remove loading skeleton class on error
                         return;
                     }
@@ -225,7 +225,7 @@
                     // Refresh the livre table to display the updated data
                     await displayLivres();
                 } catch (error) {
-                    console.error('Error adding livre:', error);
+                    alert('Error adding livre to the firestore');
                 }
             })
         })
