@@ -23,7 +23,7 @@ Plan :
     Notre projet consiste en une application mobile de bibliothèque audio offrant 
     des fonctionnalités essentielles pour la lecture des livres audio. 
     Les utilisateurs peuvent chercher des livres, les lire et les sauvegarder en tant que favoris. 
-    L'application permet également de consulter l'historique des livres consultés. 
+    L'application permet également de consulter l'historique des livres consultés.
     De plus, les utilisateurs ont la possibilité de télécharger à la fois l'audio et le PDF du livre pour une expérience de lecture flexible.
 
 4. lire le Plan
@@ -35,24 +35,13 @@ Plan :
 
 10. Analyse et conception              ()
     Dans la phase d'analyse et de conception de notre projet, 
-    nous avons utilisé UML (Unified Modeling Language) pour concevoir les routes sur lesquelles le projet sera réalisé. 
+    nous avons utilisé UML pour concevoir les routes sur lesquelles le projet sera réalisé. 
     UML nous a permis de créer des diagrammes de classes, 
     des diagrammes de cas d'utilisation pour visualiser et planifier le flux de l'application. 
 
 11. Expliquer le diagramme de class
-    Le diagramme de classes représente la structure statique d'un système en identifiant les classes, 
-    leurs attributs et leurs relations. 
-
 12. Expliquer le diagramme de cas d'utilisation admin
-    Le diagramme de cas d'utilisation décrit les interactions entre les acteurs et le système, 
-    mettant en évidence les fonctionnalités offertes par le système du point de vue des utilisateurs.
-
 13. Expliquer le diagramme de cas d'utilisation utilisateur
-
-14. Conclusion                         ()
-    L'analyse et la conception approfondies de notre projet à l'aide d'UML ont permis d'établir une base solide pour sa réalisation.
-    Ces étapes essentielles nous ont aidés à structurer efficacement l'application et à anticiper les besoins des utilisateurs, 
-    contribuant ainsi au succès de notre projet.
 
 15. Parler sur les outils de développement "les languages de programmation"             ()
     Nous avons utilisé Dart et Flutter pour le développement de l'application mobile, 

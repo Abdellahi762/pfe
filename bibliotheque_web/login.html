@@ -37,7 +37,7 @@
         <h1>Login</h1>
         <form id="submitData" action="#" method="POST">
             <div class="mb-3">
-                <input type="text" class="form-control" id="email" name="email" placeholder="Email" required>
+                <input type="email" class="form-control" id="email" name="email" placeholder="Email" required>
             </div>
             <div class="mb-3">
                 <input type="password" class="form-control" id="password" name="password" placeholder="Password"
@@ -53,9 +53,9 @@
             getAuth,
             createUserWithEmailAndPassword,
             signInWithEmailAndPassword
-        } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-auth.js";
-        import { getDatabase, set, ref, update } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-database.js";
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-app.js";
+        } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+        import { getDatabase, set, ref, update } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
 
         // 1- Initialize Firebase with your SDK configuration
         const firebaseConfig = {
@@ -74,7 +74,6 @@
         const database = getDatabase(app);
         const submitData = document.getElementById('submitData');
         const errorMessage = document.getElementById('errorMessage');
-
         submitData.addEventListener('submit', (e) => {
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
@@ -88,11 +87,11 @@
                 .catch((error) => {
                     const errorCode = error.code;
                     const errorMessageText = error.message;
-                    // Display error message
-                    errorMessage.textContent = errorMessageText;
+                    let errorMessage = document.getElementById('error-message');
                     errorMessage.style.color = 'red';
                 });
         });
+
     </script>
 </body>
 
